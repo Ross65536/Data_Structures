@@ -1,5 +1,6 @@
-#pragma once
-//a
+#ifndef __RBTrk
+#define __RBTrk
+
 namespace rk
 {
 	template <class T, class Compare_Less = std::less<T> >
@@ -200,39 +201,6 @@ namespace rk
 
 
 		}
-
-		/////////////////
-		/*if (root == 0)
-		{
-			return (RBTNode<T, Compare_Less> **) &root;
-		}
-
-		RBTNode<T, Compare_Less> ** curr_node_ptr = (RBTNode<T, Compare_Less> **) &root;
-		while (true)
-		{
-			Compare_Less less;
-			RBTNode<T, Compare_Less> * curr_node = *curr_node_ptr;
-
-			if (less(val, curr_node->data))
-			{
-				if (curr_node->left == 0)
-					return &curr_node->left;
-				else
-					curr_node_ptr = &(curr_node->left);
-			}
-			else if (less(curr_node->data, val))
-			{
-				if (curr_node->right == 0)
-					return &curr_node->right;
-				else
-					curr_node_ptr = &(curr_node->right);
-			}
-			else
-			{
-				return curr_node_ptr;
-			}
-		}*/
-		////////////////////
 
 	}
 
@@ -461,3 +429,6 @@ namespace rk
 	}
 
 }
+
+
+#endif

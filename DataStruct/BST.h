@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __BSTrk
+#define __BSTrk
+
 namespace rk
 {
 	template <class T, class Compare_Less = std::less<T> >
@@ -289,3 +291,5 @@ namespace rk
 	}
 
 }
+
+#endif
