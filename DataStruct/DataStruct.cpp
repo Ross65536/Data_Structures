@@ -24,8 +24,44 @@ void print_hash_table_primes();
 int main()
 {
 	rk::vector<int> v(30,-1);
+	rk::vector<int> v2(20);
+	rk::vector<int> v3(v2);
+	v2 = v;
+
+	for (auto i = 0; i < 30; i++)
+		v[i] = i * 10;
+
+	bool b = false;
+	for (auto i = 0; i < 30; i++)
+		if (v.at(i) != i * 10)
+			b = true;
+
+	cout << b<<endl;
+
+	cout << v2.size() << v2.empty() << v2.capacity()<<endl;
+
+	v2.push_back(1000);
+	v2.push_back(1000);
+	v2.push_back(1000);
+	v2.pop_back();
+	cout << v2.capacity()<<endl;
+
+	cout << v2.front() << " " << v2.back() << endl;
+	v2.clear();
+	v2.resize(10);
+	v2.resize(30, -100);
+	v2.resize(5);
+	v2.shrink_to_fit();
+	//v.at(100);
+
+	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
+
+
+
+	v2.reserve(10000);
 
 	cout << "hi";
+
 
 
 	/*
