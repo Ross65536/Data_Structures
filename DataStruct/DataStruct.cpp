@@ -9,6 +9,7 @@
 #include "BST.h"
 #include "RBT.h"
 #include "HashTable.h"
+#include "vector.h"
 
 using namespace std;
 
@@ -22,6 +23,11 @@ void print_hash_table_primes();
 
 int main()
 {
+	rk::vector<int> v(30,-1);
+
+	cout << "hi";
+
+
 	/*
 	//{
 	//	//, Less<string>
@@ -106,26 +112,28 @@ int main()
 	//
 	*/
 
+	
 	/*
-	rk::HashTable<int, hash_struct<int>> hash(-1, 1000);
+	rk::HashTable<int> hash(-1, 40);
 
 	cout << "hi";
 
-	for (auto i = 0; i <= 10000; i++)
+	for (auto i = 0; i <= 10000000; i++)
 		hash.insert(i);
 
 
-	rk::HashTable<int, hash_struct<int>> hash2;
+	rk::HashTable<int> hash2;
 
 	hash2 = hash;
 
 	bool fail = false;
-	for (auto i = 0; i <= 10000; i++)
+	for (auto i = 0; i <= 10000000; i++)
 		if (hash2.find(i) == -1)
 		{
 			fail = true;
 		}
 
+	
 	cout << " fail: " << fail;
 
 	cout << "\nend";
@@ -133,6 +141,7 @@ int main()
 
 
 	/*
+	
 	cout << hash.empty();
 
 	cout << "\n cont size: " << hash.table_size();
@@ -178,9 +187,11 @@ int main()
 	cout << "\nnum: " << hash.size();
 
 	cout << "\n\nhi";
-	*/
+	
 
 	print_hash_table_primes();
+
+	*/
 
     return 0;
 }
