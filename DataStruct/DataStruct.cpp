@@ -5,11 +5,16 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include "BST.h"
 #include "RBT.h"
 #include "HashTable.h"
 #include "vector.h"
+
+#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h> 
 
 using namespace std;
 
@@ -23,46 +28,106 @@ void print_hash_table_primes();
 
 int main()
 {
-	rk::vector<int> v(30,-1);
-	rk::vector<int> v2(20);
-	rk::vector<int> v3(v2);
-	v2 = v;
 
-	for (auto i = 0; i < 30; i++)
-		v[i] = i * 10;
-
-	bool b = false;
-	for (auto i = 0; i < 30; i++)
-		if (v.at(i) != i * 10)
-			b = true;
-
-	cout << b<<endl;
-
-	cout << v2.size() << v2.empty() << v2.capacity()<<endl;
-
-	v2.push_back(1000);
-	v2.push_back(1000);
-	v2.push_back(1000);
-	v2.pop_back();
-	cout << v2.capacity()<<endl;
-
-	cout << v2.front() << " " << v2.back() << endl;
-	v2.clear();
-	v2.resize(10);
-	v2.resize(30, -100);
-	v2.resize(5);
-	v2.shrink_to_fit();
-	//v.at(100);
+	srand(time(NULL));
+	
+	
 
 	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
+	for (auto x : v5)
+	{
+		cout << x << " ";
+	}
+	cout << endl;
+	
+	v5.insert(v5.begin() + 1, 100);
+	v5.insert(v5.begin() + 3, 100);
+	v5.insert(v5.end() , 100);
+	for (auto x : v5)
+	{
+		cout << x << " ";
+	}
 
-
-
-	v2.reserve(10000);
+	v5.erase(v5.begin());
+	v5.erase(v5.begin() + 1);
+	v5.erase(v5.end() - 1);
+	v5.erase(v5.end() - 3);
+	cout << endl<< "j";
+	for (auto x : v5)
+	{
+		cout << x << " ";
+	}
 
 	cout << "hi";
+	
+	/*
+	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
+
+	rk::vector_Iterator<int> itr= v5.begin();
+
+	
 
 
+	for (; itr != v5.end(); )
+	{
+		cout << *itr << " ";
+		*itr = *itr * 10;
+		itr = itr + 1;
+	}
+	cout << "\n\n";
+	v5.push_back(-1);
+	v5.push_back(-2);
+
+	for (itr = v5.end(); itr != v5.begin(); )
+	{
+		itr--;
+		cout << *itr << " ";
+		
+	}
+
+	*/
+	/*
+	rk::vector<int> v;
+	for (auto i = 0; i < 10; i++)
+	{
+		v.push_back(rand() % 100);
+	}
+
+	for (rk::vector<int>::iterator itr = v.begin(); itr != v.end(); itr++)
+	{
+		cout << " " << *itr;
+	}
+	cout << endl ;
+	cout << v.end() - v.begin();
+
+	//rk::vector<int>::iterator itr = v.cbegin();
+
+	sort(v.begin(), v.end());
+
+	cout << endl;
+	cout << endl;
+	for (rk::vector<int>::const_iterator itr = v.cbegin(); itr != v.cend(); itr++)
+	{
+		cout << " " << *itr;
+	}
+
+	struct A {
+		int a;
+		int b;
+
+	};
+
+	rk::vector<A> vA;
+	A s = { 10,10 };
+	vA.push_back(s);
+	cout << s.a<<" ";
+	auto itr2 = vA.begin();
+	itr2->a = 1000;
+
+	cout << (*itr2).a;
+	//cout << "\n\n sort:\n" << is_sorted(v.rbegin(), v.rend());
+
+	*/
 
 	/*
 	//{
@@ -150,14 +215,14 @@ int main()
 
 	
 	/*
-	rk::HashTable<int> hash(-1, 40);
+	rk::HashTable<int> hash(-1);
 
-	cout << "hi";
+	cout << "hi\n";
 
-	for (auto i = 0; i <= 10000000; i++)
+	for (int i = 0; i < 20; i++)
 		hash.insert(i);
 
-
+/*
 	rk::HashTable<int> hash2;
 
 	hash2 = hash;
@@ -168,13 +233,26 @@ int main()
 		{
 			fail = true;
 		}
+*/
+	/*int i = 0;
+	for (rk::HashTable<int>::const_iterator itr = hash.cbegin(); itr != hash.cend(); ++itr)
+	{
+		cout << *itr << " "; 
+		i++;
+	}
+	cout << endl;
+	for (auto itr = hash.cbegin(); itr != hash.cend(); itr++)
+	{
+		cout << *itr << " ";
+		i++;
 
-	
-	cout << " fail: " << fail;
+	}
+	cout << endl << is_sorted(hash.cbegin(), hash.cend());
+	cout << "\n n: " << i;
 
 	cout << "\nend";
+	
 	*/
-
 
 	/*
 	

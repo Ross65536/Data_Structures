@@ -3,13 +3,16 @@
 
 #include <cstddef>
 #include <initializer_list>
+#include <iterator>
 
-using std::size_t;
 
-
+typedef std::size_t integer_type;
 
 namespace rk
 {
+	template <class data_type, class ret_value = data_type>
+	class vector_Iterator;
+
 	class vector_Exception
 	{
 	};
@@ -20,36 +23,51 @@ namespace rk
 	private:
 		//data
 		T* data_array;
-		size_t array_size;
-		size_t num_elems;
+		integer_type array_size;
+		integer_type num_elems;
 		//functions
-		void increase_storage(size_t min_elems);
+		void increase_storage(integer_type min_elems);
 		void fit_to_size_storage();
 	public:
-		vector(size_t count =0);
-		vector(size_t count, const T& copy_value);
+		typedef vector_Iterator<T> iterator;
+		typedef vector_Iterator<T, const T> const_iterator;
+		//typedef	std::reverse_iterator<iterator>	reverse_iterator;
+		//typedef	std::reverse_iterator<const_iterator> const_reverse_iterator;
+		vector(integer_type count =0);
+		vector(integer_type count, const T& copy_value);
 		vector(vector<T> &vec);
 		vector(std::initializer_list<T> list);
 		vector<T>& operator=(vector<T> &vec);
 		~vector() { delete[] data_array; };
-		T& operator[](size_t index) { return data_array[index]; };
-		size_t size() const { return num_elems; };
+		T& operator[](integer_type index) { return data_array[index]; };
+		integer_type size() const { return num_elems; };
 		bool empty() const { return num_elems == 0; };
-		size_t capacity() const { return array_size; }
+		integer_type capacity() const { return array_size; }
 		void push_back(const T& val);
 		void pop_back() { if (num_elems != 0) num_elems--; };
 		T& front() const { if (num_elems == 0) throw rk::vector_Exception(); return data_array[0]; };
 		T& back() const { if (num_elems == 0) throw rk::vector_Exception(); return data_array[num_elems - 1]; };
-		T& at(size_t index) const{ if (index >= num_elems) throw rk::vector_Exception(); return data_array[index]; };
+		T& at(integer_type index) const{ if (index >= num_elems) throw rk::vector_Exception(); return data_array[index]; };
 		void clear() { num_elems = 0; };
-		void resize(size_t count);
-		void resize(size_t count, const T& val );
+		void resize(integer_type count);
+		void resize(integer_type count, const T& val );
 		void shrink_to_fit() { fit_to_size_storage(); };
-		void reserve(size_t count) { if (count > array_size) increase_storage(count); };
+		void reserve(integer_type count) { if (count > array_size) increase_storage(count); };
+		iterator insert(vector_Iterator<T, T> itr, const T & val);
+		iterator erase(vector_Iterator<T, T> itr);
+		iterator begin() { return vector_Iterator<T>(data_array); };
+		iterator end() { return vector_Iterator<T>(data_array + num_elems); };
+		const_iterator cbegin() const { return vector_Iterator<T, const T>(data_array); };
+		const_iterator cend() const { return vector_Iterator<T, const T>(data_array + num_elems); };
+		//reverse_iterator rbegin() { return reverse_iterator(data_array); };
+		//reverse_iterator rend() { return reverse_iterator(data_array + num_elems); };
+		//const_reverse_iterator crbegin() { return const_reverse_iterator(data_array); };
+		//const_reverse_iterator crend() { return const_reverse_iterator(data_array + num_elems); };
+
 	};
 
 	template<class T>
-	void vector<T>::increase_storage(size_t min_elems)
+	void vector<T>::increase_storage(integer_type min_elems)
 	{
 		T* old_arr = data_array;
 
@@ -59,7 +77,7 @@ namespace rk
 		}
 		data_array = new T[array_size];
 
-		for (size_t i = 0; i < num_elems; i++)
+		for (integer_type i = 0; i < num_elems; i++)
 		{
 			data_array[i] = old_arr[i];
 		}
@@ -72,7 +90,7 @@ namespace rk
 	inline void vector<T>::fit_to_size_storage()
 	{
 		
-		size_t old_array_size = array_size;
+		integer_type old_array_size = array_size;
 		while (num_elems <= array_size)
 		{
 			array_size = array_size >> 1;
@@ -89,7 +107,7 @@ namespace rk
 
 		data_array = new T[array_size];
 
-			for (size_t i = 0; i < num_elems; i++)
+			for (integer_type i = 0; i < num_elems; i++)
 			{
 				data_array[i] = old_arr[i];
 			}
@@ -98,7 +116,7 @@ namespace rk
 	}
 
 	template<class T>
-	inline vector<T>::vector(size_t count) : num_elems(count), array_size(32)
+	inline vector<T>::vector(integer_type count) : num_elems(count), array_size(32)
 	{
 		while (count > array_size)
 		{
@@ -109,7 +127,7 @@ namespace rk
 	}
 
 	template<class T>
-	inline vector<T>::vector(size_t count, const T & copy_value ) : num_elems(count), array_size(32)
+	inline vector<T>::vector(integer_type count, const T & copy_value ) : num_elems(count), array_size(32)
 	{
 		while (count > array_size)
 		{
@@ -119,7 +137,7 @@ namespace rk
 		data_array = new T[array_size];
 
 		
-		for (size_t i = 0; i < count; i++)
+		for (integer_type i = 0; i < count; i++)
 			data_array[i] = copy_value;
 
 	}
@@ -129,7 +147,7 @@ namespace rk
 	{
 		data_array = new T[array_size];
 
-		for (size_t i = 0; i < num_elems; i++)
+		for (integer_type i = 0; i < num_elems; i++)
 			data_array[i] = vec.data_array[i]; 
 	}
 
@@ -143,7 +161,7 @@ namespace rk
 		data_array = new T[array_size];
 
 		auto itr = list.begin();
-		for (size_t i = 0; itr != list.end(); i++, itr++)
+		for (integer_type i = 0; itr != list.end(); i++, itr++)
 			data_array[i] = *itr;
 	}
 
@@ -160,7 +178,7 @@ namespace rk
 
 		data_array = new T[array_size];
 
-		for (size_t i = 0; i < num_elems; i++)
+		for (integer_type i = 0; i < num_elems; i++)
 			data_array[i] = vec.data_array[i];
 
 
@@ -181,7 +199,7 @@ namespace rk
 	}
 
 	template<class T>
-	inline void vector<T>::resize(size_t count)
+	inline void vector<T>::resize(integer_type count)
 	{
 		if (count > array_size)
 		{
@@ -202,22 +220,164 @@ namespace rk
 	}
 
 	template<class T>
-	inline void vector<T>::resize(size_t count, const T & val)
+	inline void vector<T>::resize(integer_type count, const T & val)
 	{
-		size_t old_num_elems = num_elems;
+		integer_type old_num_elems = num_elems;
 		this->resize(count);
 
 		if (count > old_num_elems)
-			for (size_t i = old_num_elems; i < count; i++)
+			for (integer_type i = old_num_elems; i < count; i++)
 			{
 				data_array[i] = val;
 			}
 	}
 
+	template<class T>
+	inline typename vector<T>::iterator vector<T>::insert(vector_Iterator<T, T> itr, const T & val)
+	{
+		if (itr.ptr < data_array || itr.ptr > data_array + num_elems)
+			return this->end();
+
+		auto ret = itr;
+		T next_val = val;
+		for (;itr != this->end(); itr++)
+		{
+			swap(next_val, *itr);
+		}
+		this->push_back(next_val);
+
+		return ret;
+	}
+
+	template<class T>
+	inline typename vector<T>::iterator vector<T>::erase(vector_Iterator<T, T> itr)
+	{
+		if (itr.ptr < data_array || itr.ptr >= data_array + num_elems)
+			return this->end();
+
+		
+
+		auto ret = --this->end();
+		T next_val = *ret;
+		--ret;
+		for (; ret >= itr; --ret)
+		{
+			swap(next_val, *ret);
+		}
+		
+		--num_elems;
+
+		return itr;
+	}
+
+
+	template <class data_type, class ret_value = data_type>
+	class vector_Iterator : public std::iterator<std::random_access_iterator_tag, ret_value>
+	{
+		friend vector_Iterator<data_type, data_type>;
+		friend vector_Iterator<data_type, const  data_type>;
+		friend vector<data_type>;
+	private:
+		data_type* ptr;
+	public:
+		
+		vector_Iterator() : ptr(NULL) {};
+		vector_Iterator(data_type* ptr) : ptr(ptr) {};
+		vector_Iterator(vector_Iterator<data_type, data_type> &itr) : ptr(itr.ptr) {};
+		vector_Iterator(vector_Iterator<data_type, const data_type> &itr) : ptr(itr.ptr) {};
+		vector_Iterator<data_type, ret_value>& operator=(vector_Iterator<data_type, ret_value> &itr);
+		vector_Iterator<data_type, ret_value> operator++(int);
+		vector_Iterator<data_type, ret_value>& operator++();
+		vector_Iterator<data_type, ret_value> operator--(int);
+		vector_Iterator<data_type, ret_value> operator--();
+		vector_Iterator<data_type, ret_value> operator+(integer_type offset);
+		vector_Iterator<data_type, ret_value> operator-(integer_type offset);
+		integer_type operator-(vector_Iterator<data_type, ret_value> &itr) {return ptr - itr.ptr;};
+		vector_Iterator<data_type, ret_value>& operator+=(integer_type offset);
+		vector_Iterator<data_type, ret_value>& operator-=(integer_type offset);
+		bool operator!=(vector_Iterator<data_type, ret_value> &itr) const { return ptr != itr.ptr; };
+		bool operator==(vector_Iterator<data_type, ret_value> &itr) const { return ptr == itr.ptr; };
+		bool operator<(vector_Iterator<data_type, ret_value> &itr) const { return ptr < itr.ptr; };
+		bool operator>=(vector_Iterator<data_type, ret_value> &itr) const { return ptr >= itr.ptr; };
+		ret_value& operator*() const { return *ptr; };
+		ret_value* operator->() const { return ptr; };
+
+	};
 
 
 
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator=(vector_Iterator<data_type, ret_value>& itr)
+	{
+		if (this == &itr)
+			return *this;
 
+		ptr = itr.ptr;
+
+		return *this;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator++(int)
+	{
+		vector_Iterator<data_type, ret_value> old = *this;
+		++ptr;
+		return old; 
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator+(integer_type offset)
+	{
+		vector_Iterator<data_type, ret_value> tmp = *this;
+		tmp.ptr+=offset;
+		return tmp;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator+=(integer_type offset)
+	{
+		ptr += offset;
+		return *this;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator-=(integer_type offset)
+	{
+		ptr -= offset;
+		return *this;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator-(integer_type offset)
+	{
+		vector_Iterator<data_type, ret_value> tmp = *this;
+		tmp.ptr -= offset;
+		return tmp;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator--(int)
+	{
+		vector_Iterator<data_type, ret_value> old = *this;
+		--ptr;
+		return old;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator++()
+	{
+		
+		++ptr;
+		return *this;
+	}
+
+	template <class data_type, class ret_value = data_type>
+	inline vector_Iterator<data_type, ret_value> rk::vector_Iterator<data_type, ret_value>::operator--()
+	{
+		
+		--ptr;
+		return *this;
+	}
 
 }
 
