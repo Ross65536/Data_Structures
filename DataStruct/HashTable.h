@@ -39,6 +39,7 @@ namespace rk {
 		void grow_table();
 	public:
 		class HashTableIterator;
+		typedef HashTableIterator const_iterator;
 		HashTable(const T &Not_Found_Value = T (), integer_type min_num_elems = 0);
 		HashTable(const HashTable<T, HashFunction, PredEqual> &table);
 		HashTable<T, HashFunction, PredEqual>& operator=(const HashTable<T, HashFunction, PredEqual> &table);
@@ -46,13 +47,16 @@ namespace rk {
 		bool insert(const T &val);
 		const T& find(const T&val);
 		bool erase(const T &val);
+		const_iterator erase(const_iterator &itr) { erase(*itr); ++itr; return itr; };
 		bool empty() { return num_elements == 0; }
 		integer_type size() { return num_elements; }
 		integer_type table_size() { return array_size; }
 		void clear();
-		typedef HashTableIterator const_iterator;
+		
 		const_iterator cbegin() const { return ++const_iterator(hash_array + array_size, hash_array-1, num_elements+1); };
-		const_iterator cend() const { return const_iterator(); };
+		const_iterator cend() const { return const_iterator(hash_array + array_size, NULL, 0); };
+		const_iterator begin() const { return ++const_iterator(hash_array + array_size, hash_array - 1, num_elements + 1); };
+		const_iterator end() const { return const_iterator(hash_array + array_size, NULL, 0); };
 
 		//class - iterator. Iterator gains undefined behaviour if elements are added or removed from the underlaying hash table
 		class HashTableIterator : public std::iterator<std::forward_iterator_tag, const T>
@@ -68,8 +72,8 @@ namespace rk {
 			HashTableIterator& operator=(HashTableIterator &itr) {num_forward_elems_left = itr.num_forward_elems_left; elem_ptr = itr.elem_ptr;  table_past_end_ptr = itr.table_past_end_ptr; };
 			HashTableIterator operator++(int);
 			HashTableIterator& operator++();
-			bool operator!=(HashTableIterator &itr) const { return num_forward_elems_left != itr.num_forward_elems_left; };
-			bool operator==(HashTableIterator &itr) const { return num_forward_elems_left == itr.num_forward_elems_left; };
+			bool operator!=(HashTableIterator &itr) const { return !(*this == itr); };
+			bool operator==(HashTableIterator &itr) const { return (num_forward_elems_left == itr.num_forward_elems_left) && (table_past_end_ptr == itr.table_past_end_ptr); };
 			const T& operator*() const { return elem_ptr->value; };
 			const T* operator->() const { return &(elem_ptr->value); };
 

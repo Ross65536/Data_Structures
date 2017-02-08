@@ -31,7 +31,7 @@ int main()
 
 	srand(time(NULL));
 	
-	
+	/*
 
 	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
 	for (auto x : v5)
@@ -59,9 +59,9 @@ int main()
 	}
 
 	cout << "hi";
+	*/
 	
-	/*
-	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
+	/*rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
 
 	rk::vector_Iterator<int> itr= v5.begin();
 
@@ -82,10 +82,10 @@ int main()
 	{
 		itr--;
 		cout << *itr << " ";
-		
-	}
+		*/
+	
 
-	*/
+	
 	/*
 	rk::vector<int> v;
 	for (auto i = 0; i < 10; i++)
@@ -129,89 +129,59 @@ int main()
 
 	*/
 
-	/*
-	//{
-	//	//, Less<string>
-	//	rk::RBT<string> bst("NOT FOUND");
-	//	if (bst.isEmpty())
-	//		cout << "empty\n";
-	//	else
-	//		cout << "not empty\n";
+	
+	{
+		//, Less<string>
+		rk::BST<string> bst("NOT FROUND");
+		if (bst.empty())
+			cout << "empty\n";
+		else
+			cout << "not empty\n";
 
 
-	//	bst.insert("o");
-	//	bst.insert("r");
-	//	bst.insert("p");
-	//	bst.insert("ro");
-	//	bst.insert("n");
-	//	bst.insert("m");
-	//	bst.insert("no");
-	//	bst.insert("nc");
-	//	bst.insert("noo");
-	//	bst.insert("l");
-	//	bst.insert("mo");
-	//	bst.insert("mm");
-	//	bst.insert("ml");
-	//	bst.insert("mmo");
-	//	//bst.insert("");
+			bst.insert("o");
+			bst.insert("n");
+			bst.insert("m");
+			bst.insert("r");
+			bst.insert("m");
+			bst.insert("no");
+			bst.insert("p");
+			bst.insert("ro");
+			bst.insert("l");
+			bst.insert("nc");
+			bst.insert("noo");
+			bst.insert("mo");
+			bst.insert("mm");
+			bst.insert("ml");
+			bst.insert("mmo");
 
-	//	cout << endl;
-	//	if (bst.isEmpty())
-	//		cout << "empty\n";
-	//	else
-	//		cout << "not empty\n";
+		rk::BST<string>::const_iterator itr;
+		for ( itr = bst.begin(); itr != bst.end(); ++itr)
+		{
+			cout << *itr << " ";
+		}
+		cout << endl;
 
-	//	cout << "\nfound:\n";
-	//	cout << bst.find("mmo") << endl;
-	//	cout << bst.find("mmoo") << endl;
-	//	cout << bst.find("noo") << endl;
-	//	cout << bst.find("mn") << endl;
-	//	cout << bst.find("l") << endl;
-	//	cout << bst.find("p") << endl;
-	//	cout << bst.find("r") << endl;
+		rk::BST<string>::const_reverse_iterator itr2;
+		//itr = itr2;
+		for (itr2 = bst.rbegin(); itr2 != bst.rend(); ++itr2)
+		{
+			cout << *itr2 << " ";
+		}
+
+		cout << endl;
+
+		for (itr2 = bst.rbegin(); itr2 != bst.rend(); bst.erase(itr2))
+		{
+			cout << *itr2 << " ";
+		}
+		cout << endl << bst.empty();
 
 
-	//	if (bst.find("pa") == "")
-	//		cout << "\nsucess\n";
-
-
-	//	cout << "max: " << bst.find_Max() << endl;
-
-	//	cout << "\n\n hi\n";
-
-	//	bst.erase("mmo");
-	//	bst.erase("n");
-	//	bst.erase("o");
-	//	bst.erase("mmo");
-	//	bst.erase("mmo");
-
-	//	cout << "min: " << bst.find_Min() << endl;
-
-	//	cout << "\n\n hi\n";
-
-	//	bst.clear();
-
-	//	cout << bst.find("no") << endl;
-
-	//	bst.insert("o");
-	//	bst.insert("r");
-	//	bst.insert("p");
-	//	bst.insert("ro");
-	//	bst.insert("n");
-	//	bst.insert("m");
-
-	//	rk::RBT<string> bst2("");
-	//	bst2 = bst;
-	//	bst.clear();
-
-	//	bst2.get_Not_Found_value() = "KKKKK";
-
-	//	cout << "bst2: " << bst2.find("lklkdw") << endl;
-
-	//	cout << "\n\n hi\n";
-	//}
-	//
-	*/
+		cout << "\n\n hi\n";
+	}
+	
+	
 
 	
 	/*
@@ -219,9 +189,19 @@ int main()
 
 	cout << "hi\n";
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 1; i < 20; i++)
 		hash.insert(i);
 
+	for (auto itr = hash.cbegin() ; itr != hash.cend(); itr++)
+		cout << *itr << " ";
+
+	cout << endl;
+
+	for (auto itr = hash.cbegin(); itr != hash.cend(); hash.erase(itr))
+		cout << *itr << " ";
+
+	cout << "emp: " << hash.empty();
+	*/
 /*
 	rk::HashTable<int> hash2;
 
@@ -233,7 +213,7 @@ int main()
 		{
 			fail = true;
 		}
-*/
+
 	/*int i = 0;
 	for (rk::HashTable<int>::const_iterator itr = hash.cbegin(); itr != hash.cend(); ++itr)
 	{
