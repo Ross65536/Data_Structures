@@ -1,3 +1,7 @@
+// Developed by Rostislav Khoptiy at liandtow@gmail.com
+// contains an implementation of a simple unbalanced Binary Search Tree.
+
+
 #ifndef __BSTrk
 #define __BSTrk
 
@@ -28,7 +32,7 @@ namespace rk
 		BSTNode(const BSTNode<T, Compare_Less> &node) : data(node.val), left(0), right(0) {};
 	};
 
-	//Class - Binary search tree 
+	//Class - Binary search tree. All iterators are invalidated if insert or erase operations are used (expet in this->erase(iterator& itr) where itr is not invalidated).
 	template <class T, class Compare_Less = std::less<T>, class Node_Type = class BSTNode<T, Compare_Less> >
 	class BST
 	{

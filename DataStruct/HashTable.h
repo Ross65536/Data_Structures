@@ -1,3 +1,7 @@
+// Developed by Rostislav Khoptiy at liandtow@gmail.com
+// contains a re-implementations of std::unordered_set
+
+
 #ifndef __HASHTABLErk
 #define __HASHTABLErk
 
@@ -23,7 +27,7 @@ namespace rk {
 		HashElement(const T &val = T(), HashElementType state = EMPTY) : value(val), state(state) {}
 	};
 
-	// class - HashTable
+	// class - HashTable. All iterators are invalidated if any insertion or remove operations are carried out (except in this->erase(iterator&)).
 	template <class T, class HashFunction = std::hash<T>, class PredEqual = std::equal_to<T>>
 	class HashTable
 	{
@@ -47,7 +51,7 @@ namespace rk {
 		bool insert(const T &val);
 		const T& find(const T&val);
 		bool erase(const T &val);
-		const_iterator erase(const_iterator &itr) { erase(*itr); ++itr; return itr; };
+		const_iterator erase(const_iterator &itr) { erase(*itr); ++itr; return itr; }; ///< iterator itr is not invalidated by the call to this function
 		bool empty() { return num_elements == 0; }
 		integer_type size() { return num_elements; }
 		integer_type table_size() { return array_size; }

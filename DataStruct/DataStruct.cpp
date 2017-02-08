@@ -11,10 +11,13 @@
 #include "RBT.h"
 #include "HashTable.h"
 #include "vector.h"
+#include "Heap.h"
 
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
 #include <time.h> 
+#include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -28,9 +31,50 @@ void print_hash_table_primes();
 
 int main()
 {
+	//cout << (size_t(-1) >> 1);
+	struct g
+	{
+		bool operator ()(const int& s1, const int& s2)
+		{
+			return s1 > s2;
+		}
+	};
+	rk::Heap<int, rk::vector<int>, g> h;
+	rk::Heap<int, std::vector<int>, g> h2;
+	cout << "empty: " << h.empty()<<endl;
+	h.push(10);
+	cout << "empty: " << h.empty() << endl;
+	h.push(0);
+	h.push(5);
+	h.push(15);
+	h.push(10);
+	h.push(11);
+	h.push(0);
+	h.push(7);
+	h.push(9);
+	h.push(100);
+	h.push(56);
+	h.push(110);
+	
+	cout << "top: "<< h.top() << endl;
+	cout << "size: "<<h.size() << endl;
 
+	h.pop();
+	h.pop();
+	h.pop();
+	h.pop();
+
+	h.pop();
+	h.pop();
 	srand(time(NULL));
 	
+	h2.push(2);
+	h2.pop();
+	try {
+		h2.pop();
+	}
+	catch (...)
+	{ }
 	/*
 
 	rk::vector<int> v5 = { 10,20, 30, 40, 50, 60, 70 };
@@ -129,58 +173,58 @@ int main()
 
 	*/
 
-	
-	{
-		//, Less<string>
-		rk::BST<string> bst("NOT FROUND");
-		if (bst.empty())
-			cout << "empty\n";
-		else
-			cout << "not empty\n";
+	//
+	//{
+	//	//, Less<string>
+	//	rk::BST<string> bst("NOT FROUND");
+	//	if (bst.empty())
+	//		cout << "empty\n";
+	//	else
+	//		cout << "not empty\n";
 
 
-			bst.insert("o");
-			bst.insert("n");
-			bst.insert("m");
-			bst.insert("r");
-			bst.insert("m");
-			bst.insert("no");
-			bst.insert("p");
-			bst.insert("ro");
-			bst.insert("l");
-			bst.insert("nc");
-			bst.insert("noo");
-			bst.insert("mo");
-			bst.insert("mm");
-			bst.insert("ml");
-			bst.insert("mmo");
+	//		bst.insert("o");
+	//		bst.insert("n");
+	//		bst.insert("m");
+	//		bst.insert("r");
+	//		bst.insert("m");
+	//		bst.insert("no");
+	//		bst.insert("p");
+	//		bst.insert("ro");
+	//		bst.insert("l");
+	//		bst.insert("nc");
+	//		bst.insert("noo");
+	//		bst.insert("mo");
+	//		bst.insert("mm");
+	//		bst.insert("ml");
+	//		bst.insert("mmo");
 
-		rk::BST<string>::const_iterator itr;
-		for ( itr = bst.begin(); itr != bst.end(); ++itr)
-		{
-			cout << *itr << " ";
-		}
-		cout << endl;
+	//	rk::BST<string>::const_iterator itr;
+	//	for ( itr = bst.begin(); itr != bst.end(); ++itr)
+	//	{
+	//		cout << *itr << " ";
+	//	}
+	//	cout << endl;
 
-		rk::BST<string>::const_reverse_iterator itr2;
-		//itr = itr2;
-		for (itr2 = bst.rbegin(); itr2 != bst.rend(); ++itr2)
-		{
-			cout << *itr2 << " ";
-		}
+	//	rk::BST<string>::const_reverse_iterator itr2;
+	//	//itr = itr2;
+	//	for (itr2 = bst.rbegin(); itr2 != bst.rend(); ++itr2)
+	//	{
+	//		cout << *itr2 << " ";
+	//	}
 
-		cout << endl;
+	//	cout << endl;
 
-		for (itr2 = bst.rbegin(); itr2 != bst.rend(); bst.erase(itr2))
-		{
-			cout << *itr2 << " ";
-		}
-		cout << endl << bst.empty();
+	//	for (itr2 = bst.rbegin(); itr2 != bst.rend(); bst.erase(itr2))
+	//	{
+	//		cout << *itr2 << " ";
+	//	}
+	//	cout << endl << bst.empty();
 
 
-		cout << "\n\n hi\n";
-	}
-	
+	//	cout << "\n\n hi\n";
+	//}
+	//
 	
 
 	

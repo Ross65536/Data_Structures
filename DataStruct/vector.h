@@ -1,3 +1,8 @@
+// Developed by Rostislav Khoptiy at liandtow@gmail.com
+// contains a re-implementations of std::vector
+
+
+
 #ifndef __VECTORrk
 #define __VECTORrk
 
@@ -17,6 +22,7 @@ namespace rk
 	{
 	};
 
+	// class - vector. No iterators (except end()) are invalidated by insert/erase operations but iterators you should pay attention to iterators that get out of bounds after erase operations.
 	template <class T>
 	class vector
 	{
@@ -31,6 +37,7 @@ namespace rk
 		void increase_storage(integer_type min_elems);
 		void fit_to_size_storage();
 	public:
+		typedef T value_type;
 		typedef vector_Iterator<T> iterator;
 		typedef vector_Iterator<T, const T> const_iterator;
 		//typedef	std::reverse_iterator<iterator>	reverse_iterator;
@@ -41,6 +48,7 @@ namespace rk
 		vector(const vector<T> &vec);
 		vector(const std::initializer_list<T> &list);
 		vector<T>& operator=(const vector<T> &vec);
+		void swap(const vector<T> &vec) { swap(array_size, vec.array_size); swap(num_elems, vec.num_elems); swap(data_array, vec.data_array); };
 		~vector() { delete[] data_array; };
 		T& operator[](integer_type index) { return data_array[index]; };
 		integer_type size() const { return num_elems; };
@@ -279,7 +287,7 @@ namespace rk
 		return itr;
 	}
 
-
+	
 	template <class data_type, class ret_value = data_type>
 	class vector_Iterator : public std::iterator<std::random_access_iterator_tag, ret_value>
 	{
@@ -292,22 +300,24 @@ namespace rk
 		vector_Iterator(vector<data_type> * container_ptr, integer_type index) : container_ptr(container_ptr), index(index) {};
 	public:
 		vector_Iterator() : container_ptr(NULL), index(0) {};
-		vector_Iterator(vector_Iterator<data_type, data_type> &itr) : container_ptr(itr.container_ptr), index(itr.index) {};
-		vector_Iterator(vector_Iterator<data_type, const data_type> &itr) : container_ptr(itr.container_ptr), index(itr.index) {};
-		vector_Iterator<data_type, ret_value>& operator=(vector_Iterator<data_type, ret_value> &itr);
+		vector_Iterator(const vector_Iterator<data_type, ret_value> &itr) : container_ptr(itr.container_ptr), index(itr.index) {};
+		//vector_Iterator(vector_Iterator<data_type, const data_type> &itr) : container_ptr(itr.container_ptr), index(itr.index) {};
+		vector_Iterator<data_type, ret_value>& operator=(const vector_Iterator<data_type, ret_value> &itr);
 		vector_Iterator<data_type, ret_value> operator++(int);
 		vector_Iterator<data_type, ret_value>& operator++();
 		vector_Iterator<data_type, ret_value> operator--(int);
 		vector_Iterator<data_type, ret_value> operator--();
-		vector_Iterator<data_type, ret_value> operator+(integer_type offset);
-		vector_Iterator<data_type, ret_value> operator-(integer_type offset);
-		std::ptrdiff_t operator-(vector_Iterator<data_type, ret_value> &itr) {return (container_ptr->data_array + index) - ((itr.container_ptr)->data_array + itr.index);};
+		vector_Iterator<data_type, ret_value> operator+(integer_type offset) const;
+		vector_Iterator<data_type, ret_value> operator-(integer_type offset) const;
+		std::ptrdiff_t operator-(const vector_Iterator<data_type, ret_value> &itr) const {return ptrdiff_t(index) - ptrdiff_t(itr.index);};
 		vector_Iterator<data_type, ret_value>& operator+=(integer_type offset);
 		vector_Iterator<data_type, ret_value>& operator-=(integer_type offset);
-		bool operator!=(vector_Iterator<data_type, ret_value> &itr) const { return !(*this == itr); };
-		bool operator==(vector_Iterator<data_type, ret_value> &itr) const { return (container_ptr->data_array + index) == ((itr.container_ptr)->data_array + itr.index); };
-		bool operator<(vector_Iterator<data_type, ret_value> &itr) const { return (container_ptr->data_array + index) < ((itr.container_ptr)->data_array + itr.index); };
-		bool operator>=(vector_Iterator<data_type, ret_value> &itr) const { return !(*this < itr); };
+		bool operator!=(const vector_Iterator<data_type, ret_value> &itr) const { return !(*this == itr); };
+		bool operator==(const vector_Iterator<data_type, ret_value> &itr) const { return (container_ptr->data_array + index) == ((itr.container_ptr)->data_array + itr.index); };
+		bool operator<(const vector_Iterator<data_type, ret_value> &itr) const { return (container_ptr->data_array + index) < ((itr.container_ptr)->data_array + itr.index); };
+		bool operator>=(const vector_Iterator<data_type, ret_value> &itr) const { return !(*this < itr); };
+		bool operator>(const vector_Iterator<data_type, ret_value> &itr) const { return (container_ptr->data_array + index) > ((itr.container_ptr)->data_array + itr.index); };
+		bool operator<=(const vector_Iterator<data_type, ret_value> &itr) const { return !(*this > itr); };
 		ret_value& operator*() const { return (*container_ptr)[index]; };
 		ret_value* operator->() const { return &(*this); };
 
@@ -316,7 +326,7 @@ namespace rk
 
 
 	template <class data_type, class ret_value = data_type>
-	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator=(vector_Iterator<data_type, ret_value>& itr)
+	inline vector_Iterator<data_type, ret_value>& vector_Iterator<data_type, ret_value>::operator=(const vector_Iterator<data_type, ret_value>& itr)
 	{
 		if (this == &itr)
 			return *this;
@@ -336,9 +346,10 @@ namespace rk
 	}
 
 	template <class data_type, class ret_value = data_type>
-	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator+(integer_type offset)
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator+(integer_type offset) const 
 	{
-		vector_Iterator<data_type, ret_value> tmp = *this;
+		vector_Iterator<data_type, ret_value> tmp;
+		tmp = *this;
 		tmp+=offset;
 		return tmp;
 	}
@@ -358,7 +369,7 @@ namespace rk
 	}
 
 	template <class data_type, class ret_value = data_type>
-	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator-(integer_type offset)
+	inline vector_Iterator<data_type, ret_value> vector_Iterator<data_type, ret_value>::operator-(integer_type offset) const 
 	{
 		vector_Iterator<data_type, ret_value> tmp = *this;
 		tmp -= offset;
