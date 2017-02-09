@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <new>
 
 
 typedef std::size_t integer_type;
@@ -17,6 +18,12 @@ namespace rk
 {
 	template <class data_type, class ret_value = data_type>
 	class vector_Iterator;
+
+	template <class T>
+	class vector;
+
+	template <class T>
+	void swap(const rk::vector<T> &v1, const rk::vector<T> &v2);
 
 	class vector_Exception
 	{
@@ -37,18 +44,19 @@ namespace rk
 		void increase_storage(integer_type min_elems);
 		void fit_to_size_storage();
 	public:
+		friend void swap(const rk::vector<T> &v1, const rk::vector<T> &v2);
 		typedef T value_type;
 		typedef vector_Iterator<T> iterator;
 		typedef vector_Iterator<T, const T> const_iterator;
-		//typedef	std::reverse_iterator<iterator>	reverse_iterator;
-		//typedef	std::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef	std::reverse_iterator<iterator>	reverse_iterator;
+		typedef	std::reverse_iterator<const_iterator> const_reverse_iterator;
 		vector();
 		vector(integer_type count);
 		vector(integer_type count, const T& copy_value);
 		vector(const vector<T> &vec);
 		vector(const std::initializer_list<T> &list);
 		vector<T>& operator=(const vector<T> &vec);
-		void swap(const vector<T> &vec) { swap(array_size, vec.array_size); swap(num_elems, vec.num_elems); swap(data_array, vec.data_array); };
+		
 		~vector() { delete[] data_array; };
 		T& operator[](integer_type index) { return data_array[index]; };
 		integer_type size() const { return num_elems; };
@@ -66,16 +74,19 @@ namespace rk
 		void reserve(integer_type count) { if (count > array_size) increase_storage(count); };
 		iterator insert(vector_Iterator<T, T> itr, const T & val);
 		iterator erase(vector_Iterator<T, T> itr);
-		iterator begin() { return vector_Iterator<T>(this, 0); };
-		iterator end() { return vector_Iterator<T>(this, num_elems); };
-		const_iterator cbegin() const { return vector_Iterator<T, const T>(this, 0); };
-		const_iterator cend() const { return vector_Iterator<T, const T>(this, num_elems); };
-		//reverse_iterator rbegin() { return reverse_iterator(data_array); };
-		//reverse_iterator rend() { return reverse_iterator(data_array + num_elems); };
-		//const_reverse_iterator crbegin() { return const_reverse_iterator(data_array); };
-		//const_reverse_iterator crend() { return const_reverse_iterator(data_array + num_elems); };
+		iterator begin()  { return vector_Iterator<T>(this, 0); };
+		iterator end()  { return vector_Iterator<T>(this, num_elems); };
+		const_iterator cbegin()  { return vector_Iterator<T, const T>(this, 0); };
+		const_iterator cend()  { return vector_Iterator<T, const T>(this, num_elems); };
+		reverse_iterator rbegin() { return reverse_iterator(end()); };
+		reverse_iterator rend() { return reverse_iterator(begin()); };
+		const_reverse_iterator crbegin() { return const_reverse_iterator(cend()); };
+		const_reverse_iterator crend() { return const_reverse_iterator(cbegin()); };
 
 	};
+
+	template <class T>
+	void swap(const rk::vector<T> &v1, const rk::vector<T> &v2) { swap(v1.array_size, v2.array_size); swap(v1.num_elems, v2.num_elems); swap(v1.data_array, v2.data_array); };
 
 	template<class T>
 	void vector<T>::increase_storage(integer_type min_elems)
@@ -162,7 +173,7 @@ namespace rk
 	template<class T>
 	inline vector<T>::vector(const vector<T>& vec) : num_elems(vec.num_elems), array_size(vec.array_size)
 	{
-		data_array = new T[array_size];
+		data_array = new T[vec.array_size];
 
 		for (integer_type i = 0; i < num_elems; i++)
 			data_array[i] = vec.data_array[i]; 
@@ -252,14 +263,14 @@ namespace rk
 	template<class T>
 	inline typename vector<T>::iterator vector<T>::insert(vector_Iterator<T, T> itr, const T & val)
 	{
-		if (itr.ptr < data_array || itr.ptr > data_array + num_elems)
+		if (itr.index < 0 || itr.index > num_elems)
 			return this->end();
 
 		auto ret = itr;
 		T next_val = val;
 		for (;itr != this->end(); itr++)
 		{
-			swap(next_val, *itr);
+			::swap(next_val, *itr);
 		}
 		this->push_back(next_val);
 
@@ -269,7 +280,7 @@ namespace rk
 	template<class T>
 	inline typename vector<T>::iterator vector<T>::erase(vector_Iterator<T, T> itr)
 	{
-		if (itr.ptr < data_array || itr.ptr >= data_array + num_elems)
+		if (itr.index < 0 || itr.index > num_elems)
 			return this->end();
 
 		
@@ -279,7 +290,7 @@ namespace rk
 		--ret;
 		for (; ret >= itr; --ret)
 		{
-			swap(next_val, *ret);
+			::swap(next_val, *ret);
 		}
 		
 		--num_elems;
@@ -288,7 +299,7 @@ namespace rk
 	}
 
 	
-	template <class data_type, class ret_value = data_type>
+	template <class data_type, class ret_value >
 	class vector_Iterator : public std::iterator<std::random_access_iterator_tag, ret_value>
 	{
 		friend vector_Iterator<data_type, data_type>;

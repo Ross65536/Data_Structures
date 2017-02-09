@@ -17,6 +17,7 @@ namespace rk
 	template <class T, class Compare_Less = std::less<T>, class Node_Type = class BSTNode<T, Compare_Less> >
 	class BST;
 
+
 	//Class - Node
 	template <class T, class Compare_Less = std::less<T>>
 	class BSTNode
@@ -41,7 +42,7 @@ namespace rk
 		Node_Type * root;
 		T fail_val;
 		//functions
-		Node_Type ** find_ptr(const T& val) const;
+		Node_Type ** find_ptr(const T& val);
 		Node_Type ** find_Max_from_Node_ptr(const Node_Type * const * Node) const;
 		Node_Type ** find_Min_from_Node_ptr(const Node_Type * const * Node) const;
 		void destroy_Subtree(Node_Type * Node_start);
@@ -53,7 +54,7 @@ namespace rk
 		BST(const T& fail_d = T()) : root(0), fail_val(fail_d) {};
 		BST(const BST<T, Compare_Less, Node_Type> &bst) : fail_val(bst.fail_val) { root = copy_Subtree (bst.root); };
 		~BST();
-		void insert(const T& val);
+		bool insert(const T& val);
 		const T& find(const T& val) const;
 		bool empty() const { return root == 0; };
 		const T& find_Max() const;
@@ -89,7 +90,7 @@ namespace rk
 		public:
 			const_iterator() : BST_containter(NULL) {};
 			const_iterator(const const_iterator &itr) : Node_ptrs(itr.Node_ptrs), BST_containter(itr.BST_containter) {};
-			const_iterator& operator=(const_iterator &itr) { if (this == &itr) return *this; Node_ptrs = itr.Node_ptrs; BST_containter = itr.BST_containter; return *this; };
+			const_iterator& operator=(const const_iterator &itr) { if (this == &itr) return *this; Node_ptrs = itr.Node_ptrs; BST_containter = itr.BST_containter; return *this; };
 			const_iterator operator++(int) { auto ret = *this; ++*this; return ret; };
 			const_iterator& operator++();
 			bool operator!=(const_iterator &itr) const { return !(*this == itr); };
@@ -102,15 +103,16 @@ namespace rk
 		private:
 			friend BST;
 			//data
-			rk::vector<Node_Type*> Node_ptrs;
+			rk::vector<Node_Type*>  Node_ptrs;
 			const BST* BST_containter;
 			//functions
 			void fill_right_Nodes(Node_Type* Node) { for (; Node != NULL; Node = Node->right) Node_ptrs.push_back(Node); };
-			const_reverse_iterator(BST* BST_containter, bool bend = false) : BST_containter(BST_containter), Node_ptrs(Node_ptrs) {};
+			const_reverse_iterator(BST* BST_containter, bool bend = false) : BST_containter(BST_containter), Node_ptrs() { if (!bend) fill_right_Nodes(BST_containter->root); };
+			const_reverse_iterator(const rk::vector<Node_Type*> &Node_ptrs, const BST* BST_containter) : BST_containter(BST_containter), Node_ptrs(Node_ptrs) {};
 		public:
 			const_reverse_iterator() : BST_containter(NULL) {};
 			const_reverse_iterator(const const_reverse_iterator &itr) : Node_ptrs(itr.Node_ptrs), BST_containter(itr.BST_containter) {};
-			const_reverse_iterator& operator=(const_reverse_iterator &itr) { if (this == &itr) return *this; Node_ptrs = itr.Node_ptrs; BST_containter = itr.BST_containter; return *this; };
+			const_reverse_iterator& operator=(const const_reverse_iterator &itr) { if (this == &itr) return *this; Node_ptrs = itr.Node_ptrs; BST_containter = itr.BST_containter; return *this; };
 			const_reverse_iterator operator++(int) { auto ret = *this; ++*this; return ret; };
 			const_reverse_iterator& operator++();
 			bool operator!=(const_reverse_iterator &itr) const { return !(*this == itr); };
@@ -123,18 +125,17 @@ namespace rk
 
 	
 	template <class T, class Compare_Less, class Node_Type >
-	void BST<T, Compare_Less, Node_Type>::insert(const T& val)
+	bool BST<T, Compare_Less, Node_Type>::insert(const T& val)
 	{
 		Node_Type ** found = find_ptr(val);
 
 		if (*found == 0)
 		{
 			*found = new Node_Type(val);
+			return true;
 		}
-		else
-		{
-			return;
-		}
+		
+		return false;
 	}
 
 	template <class T, class Compare_Less, class Node_Type >
@@ -150,14 +151,14 @@ namespace rk
 
 
 	template <class T, class Compare_Less, class Node_Type >
-	Node_Type ** BST<T, Compare_Less, Node_Type>::find_ptr(const T& val) const
+	Node_Type ** BST<T, Compare_Less, Node_Type>::find_ptr(const T& val)
 	{
 		if (root == 0)
 		{
-			return (Node_Type **) &root;
+			return &root;
 		}
 
-		Node_Type ** curr_node_ptr = (Node_Type **) &root;
+		Node_Type ** curr_node_ptr = &root;
 		while (true)
 		{
 			Compare_Less less;
