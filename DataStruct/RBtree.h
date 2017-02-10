@@ -36,6 +36,7 @@ namespace rk
 		typedef std::pair<Utility_Enum, Node*> RB_Utility_Pair;
 		//functions
 		inline RB_Utility_Pair insert_find(const T& val); ///< returns a pair with .first having special values
+		void insert_rebalance(Node* inserted_Node);
 	public:
 		
 		RBtree(const T& fail_d = T()) : BST(fail_d) {};
@@ -75,6 +76,120 @@ namespace rk
 	}
 
 	template<class T, class Compare_Less>
+	inline void rk::RBtree<T, Compare_Less>::insert_rebalance(Node * ins_Node)
+	{
+		while (ins_Node->parent != NULL && ins_Node->parent->parent!=NULL
+			&& (ins_Node->bred && ins_Node->parent->bred))
+		{
+			bool bcurrent_left_of_parent;
+			bool bparent_left_of_grandparent;
+
+			const auto parent_Node = ins_Node->parent;
+			const auto grandparent_Node = parent_Node->parent;
+			
+			if (ins_Node == parent_Node->left)
+				bcurrent_left_of_parent = true;
+			else
+				bcurrent_left_of_parent = false;
+
+			if (parent_Node == grandparent_Node->left)
+				bparent_left_of_grandparent = true;
+			else
+				bparent_left_of_grandparent = false;
+
+
+				if (grandparent_Node->left->bred && grandparent_Node->right->bred) // recolor - parent and uncle red
+				{
+					grandparent_Node->left->bred = false;
+					grandparent_Node->right->bred = false;
+					grandparent_Node->bred = true;
+					ins_Node = grandparent_Node;
+				}
+				else // returns from here
+				{
+					Node ** grandparent_Node_location;
+					if (grandparent_Node->parent == NULL)
+						grandparent_Node_location = &root;
+					else if (grandparent_Node == grandparent_Node->parent->left)
+						grandparent_Node_location = grandparent_Node->parent->left;
+					else
+						grandparent_Node_location = grandparent_Node->parent->right;
+
+					const Node* uncle_Node = (bparent_left_of_grandparent) ? grandparent_Node->right : grandparent_Node->left;
+
+					
+
+					if (bparent_left_of_grandparent == bcurrent_left_of_parent) // both Node and parent on the left or right side.  
+					{
+						if (bparent_left_of_grandparent) //left side. parent - red, grandparent - black, uncle - black
+						{
+							grandparent_Node->bred = true;
+							parent_Node->bred = false;
+
+							grandparent_Node->left = parent_Node->right;
+							if (grandparent_Node->left != NULL)
+								grandparent_Node->left->parent = grandparent_Node;
+
+							parent_Node->right = grandparent_Node;
+							parent_Node->parent = grandparent_Node->parent;
+							grandparent_Node->parent = parent_Node;
+
+							*grandparent_Node_location = parent_Node;
+							
+
+						}
+						else  //right side. parent - red, grandparent - black, uncle - black
+						{
+							grandparent_Node->bred = true;
+							parent_Node->bred = false;
+
+							grandparent_Node->right = parent_Node->left;
+							if (grandparent_Node->right != NULL)
+								grandparent_Node->right->parent = grandparent_Node;
+
+							parent_Node->left = grandparent_Node;
+							parent_Node->parent = grandparent_Node->parent;
+							grandparent_Node->parent = parent_Node;
+
+							*grandparent_Node_location = parent_Node;
+						}
+					}
+					else // Node and parent on different sides
+					{
+						if (bparent_left_of_grandparent) //parent - left, node - right. parent - red, grandparent - black,  uncle balck
+						{
+							grandparent_Node->bred = true;
+							ins_Node ->bred = false;
+
+
+
+							*grandparent_Node_location = ins_Node;
+						}
+						else
+						{
+							grandparent_Node->right = NULL;
+							grandparent_Node->bred = true;
+
+							auto New_Node = new RBTNode<T, Compare_Less>(val, false);
+							*grandparent_Node_location = New_Node;
+							New_Node->right = parent_Node;
+							New_Node->left = grandparent_Node;
+
+						}
+
+					}
+					
+
+					return;
+				}
+
+				if (ins_Node != NULL) //root
+					ins_Node->bred = false;
+		}
+
+	}
+
+	template<class T, class Compare_Less>
 	inline bool rk::RBtree<T, Compare_Less>::insert(const T & val)
 	{
 		if (empty())
@@ -92,13 +207,15 @@ namespace rk
 			if (pair.first == LEFT_NULL)
 			{
 				pair.second->left = new Node(val, pair.second);
+				pair.second = pair.second->left;
 			}
 			else //right NULL
 			{
 				pair.second->right = new Node(val, pair.second);
+				pair.second = pair.second->right;
 			}
 
-			//insert_rebalance();
+			insert_rebalance(pair.second);
 			return true;
 	
 		}	
