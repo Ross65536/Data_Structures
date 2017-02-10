@@ -84,9 +84,9 @@ namespace rk
 			bool bcurrent_left_of_parent;
 			bool bparent_left_of_grandparent;
 
-			const auto parent_Node = ins_Node->parent;
-			const auto grandparent_Node = parent_Node->parent;
-			
+			auto parent_Node = ins_Node->parent;
+			auto grandparent_Node = parent_Node->parent;
+
 			if (ins_Node == parent_Node->left)
 				bcurrent_left_of_parent = true;
 			else
@@ -97,95 +97,114 @@ namespace rk
 			else
 				bparent_left_of_grandparent = false;
 
+			Node * uncle_Node = (bparent_left_of_grandparent) ? grandparent_Node->right : grandparent_Node->left;
 
-				if (grandparent_Node->left->bred && grandparent_Node->right->bred) // recolor - parent and uncle red
-				{
-					grandparent_Node->left->bred = false;
-					grandparent_Node->right->bred = false;
-					grandparent_Node->bred = true;
-					ins_Node = grandparent_Node;
-				}
-				else // returns from here
-				{
-					Node ** grandparent_Node_location;
-					if (grandparent_Node->parent == NULL)
-						grandparent_Node_location = &root;
-					else if (grandparent_Node == grandparent_Node->parent->left)
-						grandparent_Node_location = grandparent_Node->parent->left;
-					else
-						grandparent_Node_location = grandparent_Node->parent->right;
-
-					const Node* uncle_Node = (bparent_left_of_grandparent) ? grandparent_Node->right : grandparent_Node->left;
+			if ((uncle_Node != NULL) && parent_Node->bred && uncle_Node->bred) // recolor - parent and uncle red
+			{
+				parent_Node->bred = false;
+				uncle_Node->bred = false;
+				grandparent_Node->bred = true;
+				ins_Node = grandparent_Node;
+			}
+			else // returns from loop here
+			{
+				Node ** grandparent_Node_location;
+				if (grandparent_Node->parent == NULL)
+					grandparent_Node_location = &root;
+				else if (grandparent_Node == grandparent_Node->parent->left)
+					grandparent_Node_location = &grandparent_Node->parent->left;
+				else
+					grandparent_Node_location = &grandparent_Node->parent->right;
 
 					
-
-					if (bparent_left_of_grandparent == bcurrent_left_of_parent) // both Node and parent on the left or right side.  
+				if (bparent_left_of_grandparent == bcurrent_left_of_parent) // both Node and parent on the left or right side.  
+				{
+					if (bparent_left_of_grandparent) //left side. parent - red, grandparent - black, uncle - black
 					{
-						if (bparent_left_of_grandparent) //left side. parent - red, grandparent - black, uncle - black
-						{
-							grandparent_Node->bred = true;
-							parent_Node->bred = false;
+						grandparent_Node->bred = true;
+						parent_Node->bred = false;
 
-							grandparent_Node->left = parent_Node->right;
-							if (grandparent_Node->left != NULL)
-								grandparent_Node->left->parent = grandparent_Node;
+						grandparent_Node->left = parent_Node->right;
+						if (grandparent_Node->left != NULL)
+							grandparent_Node->left->parent = grandparent_Node;
 
-							parent_Node->right = grandparent_Node;
-							parent_Node->parent = grandparent_Node->parent;
-							grandparent_Node->parent = parent_Node;
+						parent_Node->right = grandparent_Node;
+						parent_Node->parent = grandparent_Node->parent;
+						grandparent_Node->parent = parent_Node;
 
-							*grandparent_Node_location = parent_Node;
+						*grandparent_Node_location = parent_Node;
 							
 
-						}
-						else  //right side. parent - red, grandparent - black, uncle - black
-						{
-							grandparent_Node->bred = true;
-							parent_Node->bred = false;
-
-							grandparent_Node->right = parent_Node->left;
-							if (grandparent_Node->right != NULL)
-								grandparent_Node->right->parent = grandparent_Node;
-
-							parent_Node->left = grandparent_Node;
-							parent_Node->parent = grandparent_Node->parent;
-							grandparent_Node->parent = parent_Node;
-
-							*grandparent_Node_location = parent_Node;
-						}
 					}
-					else // Node and parent on different sides
+					else  //right side. parent - red, grandparent - black, uncle - black
 					{
-						if (bparent_left_of_grandparent) //parent - left, node - right. parent - red, grandparent - black,  uncle balck
-						{
-							grandparent_Node->bred = true;
-							ins_Node ->bred = false;
+						grandparent_Node->bred = true;
+						parent_Node->bred = false;
 
+						grandparent_Node->right = parent_Node->left;
+						if (grandparent_Node->right != NULL)
+							grandparent_Node->right->parent = grandparent_Node;
 
+						parent_Node->left = grandparent_Node;
+						parent_Node->parent = grandparent_Node->parent;
+						grandparent_Node->parent = parent_Node;
 
-							*grandparent_Node_location = ins_Node;
-						}
-						else
-						{
-							grandparent_Node->right = NULL;
-							grandparent_Node->bred = true;
+						*grandparent_Node_location = parent_Node;
+					}
+				}
+				else // Node and parent on different sides
+				{
+					if (bparent_left_of_grandparent) //parent - left, node - right. parent - red, grandparent - black,  uncle balck
+					{
+						grandparent_Node->bred = true;
+						ins_Node ->bred = false;
 
-							auto New_Node = new RBTNode<T, Compare_Less>(val, false);
-							*grandparent_Node_location = New_Node;
-							New_Node->right = parent_Node;
-							New_Node->left = grandparent_Node;
+						grandparent_Node->left = ins_Node->right;
+						if (grandparent_Node->left != NULL)
+							grandparent_Node->left->parent = grandparent_Node;
 
-						}
+						parent_Node->right = ins_Node->left;
+						if (parent_Node->right != NULL)
+							parent_Node->right->parent = parent_Node;
+
+						ins_Node->left = parent_Node;
+						parent_Node->parent = ins_Node;
+
+						ins_Node->right = grandparent_Node;
+						grandparent_Node->parent = ins_Node;
+
+						*grandparent_Node_location = ins_Node;
+					}
+					else //parent - right, node - left. parent - red, grandparent - black,  uncle balck
+					{
+						grandparent_Node->bred = true;
+						ins_Node->bred = false;
+
+						grandparent_Node->right = ins_Node->left;
+						if (grandparent_Node->right != NULL)
+							grandparent_Node->right->parent = grandparent_Node;
+
+						parent_Node->left = ins_Node->right;
+						if (parent_Node->left != NULL)
+							parent_Node->left->parent = parent_Node;
+
+						ins_Node->right = parent_Node;
+						parent_Node->parent = ins_Node;
+
+						ins_Node->left = grandparent_Node;
+						grandparent_Node->parent = ins_Node;
+
+						*grandparent_Node_location = ins_Node;
 
 					}
-					
-
-					return;
 				}
 
-				if (ins_Node != NULL) //root
-					ins_Node->bred = false;
+				return;
+			}
 		}
+
+		if (ins_Node->parent == NULL) //root
+			ins_Node->bred = false;
 
 	}
 
@@ -200,6 +219,8 @@ namespace rk
 		else
 		{
 			auto pair = insert_find(val);
+			const bool bred = pair.second->bred;
+
 			if (pair.first == NODE_FOUND) // val already in tree
 				return false;
 			
@@ -215,7 +236,9 @@ namespace rk
 				pair.second = pair.second->right;
 			}
 
-			insert_rebalance(pair.second);
+			if (bred ) //rebalance if parent is red
+				insert_rebalance(pair.second);
+
 			return true;
 	
 		}	

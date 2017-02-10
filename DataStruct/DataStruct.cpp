@@ -22,6 +22,8 @@
 
 using namespace std;
 
+#define HI {cout << "Hi\n";}
+
 template <class T>
 struct hash_struct
 {
@@ -183,66 +185,62 @@ int main()
 	
 	{
 		//, Less<string>
-		rk::BST<string> bst("NOT FROUND");
+		rk::RBtree<int> bst(-1);
 		if (bst.empty())
 			cout << "empty\n";
 		else
 			cout << "not empty\n";
 
+		bst.insert(800);
+		bst.insert(700);
+		bst.insert(600);
+		bst.insert(500);
+		bst.insert(400);
+		bst.insert(300);
+		bst.insert(200);
+		bst.insert(250);
+		bst.insert(260);
+		bst.insert(255);
 
-			bst.insert("o");
-			bst.insert("n");
-			bst.insert("m");
-			bst.insert("r");
-			bst.insert("m");
-			bst.insert("no");
-			bst.insert("p");
-			bst.insert("ro");
-			bst.insert("l");
-			bst.insert("nc");
-			bst.insert("noo");
-			bst.insert("mo");
-			bst.insert("mm");
-			bst.insert("ml");
-			bst.insert("mmo");
+		HI
 
-		rk::BST<string>::const_iterator itr;
-		for ( itr = bst.begin(); itr != bst.end(); ++itr)
-		{
-			cout << *itr << " ";
-		}
-		cout << endl;
+		//rk::BST<string>::const_iterator itr;
+		//for ( itr = bst.begin(); itr != bst.end(); ++itr)
+		//{
+		//	cout << *itr << " ";
+		//}
+		//cout << endl;
 
-		/*for (auto itr2 = bst.begin(); itr2 != bst.end(); bst.erase(itr2))
-		{
-			cout << *itr2 << " ";
-		}
-		cout << endl << bst.empty();*/
+		///*for (auto itr2 = bst.begin(); itr2 != bst.end(); bst.erase(itr2))
+		//{
+		//	cout << *itr2 << " ";
+		//}
+		//cout << endl << bst.empty();*/
 
-		rk::BST<string>::const_reverse_iterator itr2;
-		//itr = itr2;
-		for (itr2 = bst.crbegin(); itr2 != bst.crend(); ++itr2)
-		{
-			cout << *itr2 << " ";
-		}
+		//rk::BST<string>::const_reverse_iterator itr2;
+		////itr = itr2;
+		//for (itr2 = bst.crbegin(); itr2 != bst.crend(); ++itr2)
+		//{
+		//	cout << *itr2 << " ";
+		//}
 
-		cout << endl;
+		//cout << endl;
 
-		for (itr2 = bst.rbegin(); itr2 != bst.rend(); bst.erase(itr2))
-		{
-			cout << *itr2 << " ";
-		}
-		cout << endl << bst.empty();
+		//for (itr2 = bst.rbegin(); itr2 != bst.rend(); bst.erase(itr2))
+		//{
+		//	cout << *itr2 << " ";
+		//}
+		//cout << endl << bst.empty();
 
 
-		cout << "\n\n hi\n";
+		//cout << "\n\n hi\n";
 
 
 	}
 
 	{
 		//, Less<string>
-		rk::RBtree<string> bst("NOT FROUND");
+		rk::BST<string> bst("NOT FROUND");
 		if (bst.empty())
 			cout << "empty\n";
 		else
@@ -265,7 +263,7 @@ int main()
 		bst.insert("ml");
 		bst.insert("mmo");
 
-		rk::RBtree<string>::const_iterator itr;
+		rk::BST<string>::const_iterator itr;
 		for (itr = bst.begin(); itr != bst.end(); ++itr)
 		{
 			cout << *itr << " ";
@@ -278,7 +276,7 @@ int main()
 		}
 		cout << endl << bst.empty();*/
 
-		rk::RBtree<string>::const_reverse_iterator itr2;
+		rk::BST<string>::const_reverse_iterator itr2;
 		//itr = itr2;
 		for (itr2 = bst.crbegin(); itr2 != bst.crend(); ++itr2)
 		{
