@@ -1,3 +1,6 @@
+// Developed by Rostislav Khoptiy at liandtow@gmail.com
+// contains an re-implementations of std::set
+
 #ifndef __RBtreerk
 #define __RBtreerk
 
