@@ -4,6 +4,11 @@
 #include <utility>
 #include "BST.h"
 
+
+static size_t max1=0;
+static size_t nelem = 0;
+static int min1 = 1000;
+
 namespace rk
 {
 	template <class T, class Compare_Less = std::less<T> >
@@ -42,9 +47,76 @@ namespace rk
 		RBtree(const T& fail_d = T()) : BST(fail_d) {};
 		RBtree(const RBtree<T, Compare_Less> &rb) : BST(rb) { root = copy_Subtree(rb.root); };
 		bool insert(const T& val);
+		void check(Node* node = 0);
+		void minheight(Node* node = 0);
 	};
 
+	template<class T, class Compare_Less>
+	inline void rk::RBtree<T, Compare_Less>::minheight(Node* node = 0)
+	{
+		
+		if (node == 0)
+		{
+			node = root;
+			
+		}
+
+		if ((node->right == 0) || (node->left == 0))
+		{
+			int i = 1;
+			for (auto n = node; n->parent != 0; n = n->parent, i++)
+			{
+			}
+			if (min1 > i)
+				min1 = i;
+		}
+		if ((node->right == 0) && (node->left == 0))
+		{
+			int i = 1;
+			for (auto n = node; n->parent != 0; n=n->parent, i++)
+			{ }
+			if (i > max1)
+				max1 = i;
+		}
+
+		if (node->left != 0)
+		{
+			minheight(node->left);
+		}
+
+		if (node->right != 0)
+		{
+			minheight(node->right);
+		}
+	}
+
 	
+	template<class T, class Compare_Less>
+	 void rk::RBtree<T, Compare_Less>::check(Node* node = 0)
+	{
+		if (node == 0)
+			node = root;
+
+
+		if ((node->right == 0) && (node->left == 0))
+			return;
+
+		if (node->left != 0)
+		{
+			if ((node->bred && node->left->bred))
+				cout << "RED ERROR\n";
+			check(node->left);
+		}
+
+		if (node->right != 0)
+		{
+			if ((node->bred && node->right->bred))
+				cout << "RED ERROR\n";
+			check(node->right);
+		}
+
+
+	}
 
 	template<class T, class Compare_Less>
 	inline typename rk::RBtree<T, Compare_Less>::RB_Utility_Pair rk::RBtree<T, Compare_Less>::insert_find(const T & val)
@@ -57,19 +129,24 @@ namespace rk
 			if (less(val, curr_node->data))
 			{
 				if (curr_node->left == 0)
-					return { LEFT_NULL, curr_node };
+				{
+					return{ LEFT_NULL, curr_node };
+				}
 				else
 					curr_node = curr_node->left;
 			}
 			else if (less(curr_node->data, val))
 			{
 				if (curr_node->right == 0)
-					return { RIGHT_NULL, curr_node };
+				{
+					return{ RIGHT_NULL, curr_node };
+				}
 				else
 					curr_node = curr_node->right;
 			}
 			else
 			{
+
 				return { NODE_FOUND, curr_node };
 			}
 		}
@@ -81,23 +158,13 @@ namespace rk
 		while (ins_Node->parent != NULL && ins_Node->parent->parent!=NULL
 			&& (ins_Node->bred && ins_Node->parent->bred))
 		{
-			bool bcurrent_left_of_parent;
-			bool bparent_left_of_grandparent;
+			auto const parent_Node = ins_Node->parent;
+			auto const grandparent_Node = parent_Node->parent;
 
-			auto parent_Node = ins_Node->parent;
-			auto grandparent_Node = parent_Node->parent;
+			bool const bcurrent_left_of_parent = (ins_Node == parent_Node->left) ? true : false;
+			bool const bparent_left_of_grandparent = (parent_Node == grandparent_Node->left) ? true : false;
 
-			if (ins_Node == parent_Node->left)
-				bcurrent_left_of_parent = true;
-			else
-				bcurrent_left_of_parent = false;
-
-			if (parent_Node == grandparent_Node->left)
-				bparent_left_of_grandparent = true;
-			else
-				bparent_left_of_grandparent = false;
-
-			Node * uncle_Node = (bparent_left_of_grandparent) ? grandparent_Node->right : grandparent_Node->left;
+			Node * const uncle_Node = (bparent_left_of_grandparent) ? grandparent_Node->right : grandparent_Node->left;
 
 			if ((uncle_Node != NULL) && parent_Node->bred && uncle_Node->bred) // recolor - parent and uncle red
 			{
@@ -108,6 +175,7 @@ namespace rk
 			}
 			else // returns from loop here
 			{
+
 				Node ** grandparent_Node_location;
 				if (grandparent_Node->parent == NULL)
 					grandparent_Node_location = &root;
@@ -158,6 +226,8 @@ namespace rk
 					{
 						grandparent_Node->bred = true;
 						ins_Node ->bred = false;
+						
+						
 
 						grandparent_Node->left = ins_Node->right;
 						if (grandparent_Node->left != NULL)
@@ -167,11 +237,14 @@ namespace rk
 						if (parent_Node->right != NULL)
 							parent_Node->right->parent = parent_Node;
 
+						ins_Node->parent = grandparent_Node->parent;
+
 						ins_Node->left = parent_Node;
 						parent_Node->parent = ins_Node;
 
 						ins_Node->right = grandparent_Node;
 						grandparent_Node->parent = ins_Node;
+						
 
 						*grandparent_Node_location = ins_Node;
 					}
@@ -187,6 +260,8 @@ namespace rk
 						parent_Node->left = ins_Node->right;
 						if (parent_Node->left != NULL)
 							parent_Node->left->parent = parent_Node;
+
+						ins_Node->parent = grandparent_Node->parent;
 
 						ins_Node->right = parent_Node;
 						parent_Node->parent = ins_Node;
@@ -206,6 +281,8 @@ namespace rk
 		if (ins_Node->parent == NULL) //root
 			ins_Node->bred = false;
 
+		
+
 	}
 
 	template<class T, class Compare_Less>
@@ -214,6 +291,7 @@ namespace rk
 		if (empty())
 		{
 			root = new Node(val, NULL, false); //root is black
+			nelem++;
 			return true;
 		}
 		else
@@ -239,6 +317,7 @@ namespace rk
 			if (bred ) //rebalance if parent is red
 				insert_rebalance(pair.second);
 
+			nelem++;
 			return true;
 	
 		}	
